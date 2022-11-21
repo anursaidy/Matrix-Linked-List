@@ -100,13 +100,13 @@ class Matrix
 {
 public:
 	Matrix();
-	Matrix(T arr[][3], int rows, int cols); //parameterized
+	Matrix(T** arr, int rows, int cols); //parameterized
 	Matrix(const Matrix& obj);
 	Matrix(Matrix&& obj);
 	virtual ~Matrix();
 
-	Node<T>* getRow(int);
-	Node<T>* getColumn(int);
+	Node<T>* getRow(int) const;
+	Node<T>* getColumn(int) const;
 	T at(int const row, int const col);
 	Matrix<T>& transpose(Matrix& obj);
 	Matrix<T> operator+ (const Matrix& obj);
@@ -116,6 +116,8 @@ private:
 	Node<T>* headMatrix;
 	Node<T>** newRow; //seperating each rows.
 
+	int rows;
+	int cols;
 
 };
 

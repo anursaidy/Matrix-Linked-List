@@ -7,35 +7,11 @@ Matrix<T>::Matrix()
 }
 
 template <typename T>
-Matrix<T>::Matrix(T arr[][3], int rows, int cols)
+Matrix<T>::Matrix(T** arr, int r, int c)
 {
 
-	////if (*arr = nullptr)
-	////    throw; //error;
-	//
-	//Node<T>* firstNode = new Node<T>(*(arr + 0 * cols + 0));
-	//headMatrix = firstNode;
-	//
-	////newRow[0] = firstNode;
-
-	////Store each newRow[i] with its corresponding Rows and each of their ->nextInRow
-	//for (int i = 0; i < rows; i++)
-	//{
-	//	if (firstNode != headMatrix) { 
-	//		firstNode = new Node<T>(*(arr + 1));//First Node of each row
-	//	}
-	//	newRow[i] = nullptr;
-	//	for (int j = 0; j < cols; j++) {
-	//		if (!newRow[i]) {
-	//			newRow[i] = firstNode;
-	//		}
-	//		else {
-	//			firstNode->nextInRow = new Node<T>(*(arr + i * cols + j));
-	//			firstNode = firstNode->nextInRow;
-	//		}
-	//	}
-	//}
-//=============================================================================================
+	rows = r;
+	cols = c;
 
 	//if (*arr = nullptr)
 	//    throw; //error;
@@ -68,7 +44,6 @@ Matrix<T>::Matrix(T arr[][3], int rows, int cols)
 	{
 		Node<T>* temp = newRow[i];
 		Node<T>* temp2 = newRow[i + 1];
-
 
 		while (temp->nextInRow != nullptr) {
 			if (i != rows - 1) { //not last row
@@ -104,11 +79,11 @@ Matrix<T>::Matrix(Matrix&& obj) {
 
 
 template <typename T>
-Node<T>* Matrix<T>::getRow(int i) {
+Node<T>* Matrix<T>::getRow(int i) const {
 	return newRow[i];
 }
 template <typename T>
-Node<T>* Matrix<T>::getColumn(int i) {
+Node<T>* Matrix<T>::getColumn(int i) const{
 	Node<T>* temp = newRow[0];
 	int count = 0;
 	while (count < i) {
@@ -162,32 +137,27 @@ Matrix<T> Matrix<T>::operator+ (const Matrix& obj) {
 }
 template <typename T>
 Matrix<T> Matrix<T>::operator* (const Matrix& obj) {
-	Node<T>* rows = getRow(0);
-	Node<T>* cols = getColumn(0);
+	Node<T>* rowsMatrix;
+	Node<T>* colsMatrix;
+	
 	int sum = 0;
-
-	sum += rows->value * cols->value;
-
-
+	
 	int j = 0;
-	for (int i = 0; i < 3; i++)
+	for (int i = 0; i < rows-1; )
 	{
 
+		if (j == obj.cols) {
+			 //has to remain in the same row until we iterate through all columns
+			i++;
+			j = 0;
+		}
+		rowsMatrix = getRow(i);
+		colsMatrix = obj.getColumn(j);
 
-		rows = getRow(i); //has to remain in the same row until we iterate through all columns
-
-		cols = getColumn(j);
-
-		while (rows->nextInRow != nullptr) {
-
-
-			sum += rows->nextInRow->value * cols->nextInColumn->value;
-			rows = rows->nextInRow;
-			cols = cols->nextInColumn;
-
-
-
-
+		while (colsMatrix != nullptr) {
+			sum += rowsMatrix->value * colsMatrix->value;
+			rowsMatrix = rowsMatrix->nextInRow;
+			colsMatrix = colsMatrix->nextInColumn;
 		}
 
 		sum = 0;
