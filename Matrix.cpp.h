@@ -124,7 +124,7 @@ T Matrix<T>::at(int const row, int const col) {
 
 }
 template <typename T>
-Matrix<T>& Matrix<T>::transpose(Matrix& obj) {
+Matrix<T>& Matrix<T>::transpose() {
 
 	/*
 
@@ -196,6 +196,7 @@ Matrix<T> Matrix<T>::operator* (const Matrix& obj) {
 	return (*this);
 
 }
+
 template <typename T>
 istream& operator<< (ostream& os, const Matrix<T>& matrix) {
 

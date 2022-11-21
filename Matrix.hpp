@@ -108,7 +108,7 @@ public:
 	Node<T>* getRow(int);
 	Node<T>* getColumn(int);
 	T at(int const row, int const col);
-	Matrix<T>& transpose(Matrix& obj);
+	Matrix<T>& transpose();
 	Matrix<T> operator+ (const Matrix& obj);
 	Matrix<T> operator* (const Matrix& obj);
 	friend istream& operator<< (ostream& os, const Matrix& matrix);
