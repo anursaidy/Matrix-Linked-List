@@ -1,7 +1,7 @@
 #include "Matrix.hpp"
 
 int main() {
-	
+	/*
 	int** arr = new int*[3];
 	for (int i = 0; i < 3; i++)
 	{
@@ -42,5 +42,7 @@ int main() {
 	Matrix<int> matrix2(arr2, 3, 3);
 
 	matrix* matrix2;
+*/
 
+std::cout << "working";
 }
