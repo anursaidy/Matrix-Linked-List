@@ -129,10 +129,27 @@ Matrix<T>& Matrix<T>::transpose() {
 
 	*/
 
+	if (rows != cols)
+		throw;
 
 }
 template <typename T>
 Matrix<T> Matrix<T>::operator+ (const Matrix& obj) {
+	if (
+		rows != obj.rows;
+		cols != obj.cols;
+		)
+		throw invalid_argument("Number of rows or cols is not compatible");
+	for (int i = 0; i < this->rows; i++)
+	{
+		for (int j = 0; j < cols; j++)
+		{
+			newRow()
+
+		}
+
+	}
+
 
 }
 template <typename T>
