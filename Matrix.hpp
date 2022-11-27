@@ -3,6 +3,7 @@
 
 #include <istream>
 #include <iostream>
+#include <stdexcept>
 
 using namespace std;
 /*
@@ -100,6 +101,8 @@ class Matrix
 {
 public:
 	Matrix();
+	//Construct a matrix with #of row and col, will not be initialized by default
+	//Matrix(int row, int col, T initializedValuValue);
 	Matrix(T** arr, int rows, int cols); //parameterized
 	Matrix(const Matrix& obj);
 	Matrix(Matrix&& obj);
@@ -108,10 +111,10 @@ public:
 	Node<T>* getRow(int) const;
 	Node<T>* getColumn(int) const;
 	T at(int const row, int const col);
-	Matrix<T>& transpose(Matrix& obj);
+	Matrix<T>& transpose();
 	Matrix<T> operator+ (const Matrix& obj);
 	Matrix<T> operator* (const Matrix& obj);
-	friend istream& operator<< (ostream& os, const Matrix& matrix);
+	friend ostream& operator<< (ostream& os, const Matrix& matrix);
 private:
 	Node<T>* headMatrix;
 	Node<T>** newRow; //seperating each rows.

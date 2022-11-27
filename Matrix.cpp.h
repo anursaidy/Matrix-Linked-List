@@ -29,7 +29,7 @@ Matrix<T>::Matrix(T** arr, int r, int c)
 		}
 		newRow[i] = nullptr;
 		for (int j = 0; j < cols; j++) {
-			if (!newRow[i]) {
+			if (newRow[i]==nullptr) {
 				newRow[i] = firstNode;
 			}
 			else {
@@ -99,36 +99,20 @@ T Matrix<T>::at(int const row, int const col) {
 
 }
 template <typename T>
-Matrix<T>& Matrix<T>::transpose(Matrix& obj) {
+Matrix<T>& Matrix<T>::transpose() {
 
 	/*
-
 	Sebastian
-
 	// Take the first head in a temp object
-
 	Node<T> * temp = headMatrix;
-
-
-
-
 	create a new 2d array with the correct dimensions
-
-
-
-
 	create a 2d array with correct values on it
-
-
-
-	create the matrix
-
-
-
 	return it
-
 	*/
+	
+	Matrix transposedMatrix;
 
+	transposedMatrix;
 
 }
 template <typename T>
@@ -139,34 +123,55 @@ template <typename T>
 Matrix<T> Matrix<T>::operator* (const Matrix& obj) {
 	Node<T>* rowsMatrix;
 	Node<T>* colsMatrix;
+
+	///Create a 2D array that can hold the values of the resulting dot product
+	int k = 0;
+	int l = 0;
+	int** tempArr = new int* [rows];
+	for (int i = 0; i < rows; i++)
+	{
+		for (int j = 0; j < cols; j++)
+		{
+			tempArr[i] = new int[cols];
+
+		}
+	}
+
 	
 	int sum = 0;
 	
 	int j = 0;
 	for (int i = 0; i < rows-1; )
 	{
-
 		if (j == obj.cols) {
 			 //has to remain in the same row until we iterate through all columns
 			i++;
+			k++;
 			j = 0;
+			l = 0;
+			
 		}
 		rowsMatrix = getRow(i);
 		colsMatrix = obj.getColumn(j);
+		
 
 		while (colsMatrix != nullptr) {
 			sum += rowsMatrix->value * colsMatrix->value;
 			rowsMatrix = rowsMatrix->nextInRow;
 			colsMatrix = colsMatrix->nextInColumn;
 		}
-
+		tempArr[k][l] = sum;
+		
+		
 		sum = 0;
+		l++;
 		j++;
 	}
-	return (*this);
+	return Matrix(tempArr, rows, cols);
+	
 
 }
 template <typename T>
-istream& operator<< (ostream& os, const Matrix<T>& matrix) {
+ostream& operator<< (ostream& os, const Matrix<T>& matrix) {
 
 }
