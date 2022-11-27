@@ -27,100 +27,136 @@ A forward iterator as a subclass of the "Matrix" ADT that traverses the items of
 template <typename T>
 class Node {
 public:
-	T value;
-	Node<T>* nextInRow;
-	Node<T>* nextInColumn;
+    T value;
+    Node<T>* nextInRow;
+    Node<T>* nextInColumn;
 
-	Node()
-	{
-		nextInRow = nullptr;
-		nextInColumn = nullptr;
-	}
+    Node()
+    {
+        nextInRow = nullptr;
+        nextInColumn = nullptr;
+    }
 
-	Node(const T& value)
-	{
-		this->value = value;
-		nextInRow = nullptr;
-		nextInColumn = nullptr;
-	}
+    Node(const T& value)
+    {
+        (this)->value = value ;
+        nextInRow = nullptr;
+        nextInColumn = nullptr;
+    }
 
-	virtual ~Node()
-	{
-		if (nextInRow != nullptr)
-		{
-			delete nextInRow;
-		}
-		if (nextInColumn != nullptr)
-		{
-			delete nextInColumn;
-		}
-	}
+    virtual ~Node()
+    {
+        if (nextInRow != nullptr)
+        {
+            delete nextInRow;
+            nextInRow = nullptr;
+        }
+        if (nextInColumn != nullptr)
+        {
+            delete nextInColumn;
+            nextInColumn = nullptr;
+        }
+    }
 };
 
 template <typename T>
 class MatrixIterator : public std::iterator<std::forward_iterator_tag, T>
 {
-private:
-	Node<T>* current;
 public:
-	MatrixIterator(Node<T>* n)
-	{
-		current = n;
-	}
+    Node<T>* current;
+public:
+    
+    MatrixIterator(){
+        current = nullptr;
+    }
+    
+    MatrixIterator(Node<T>* n)
+    {
+        current = n;
+    }
+    
+    
 
-	MatrixIterator operator++()
-	{
-		current = current->nextInRow;
-		return *this;
-	}
+    MatrixIterator operator++()
+    {
+        current = current->nextInRow;
+        return *this;
+    }
 
-	MatrixIterator operator++ (int dummy)
-	{
-		MatrixIterator temp(current);
-		current = current->nextInRow;
-		return temp;
-	}
+    MatrixIterator operator++ (int dummy)
+    {
+        MatrixIterator temp(current);
+        current = current->nextInRow;
+        return temp;
+    }
+    
+    
+    // We need a way to get the element going down
+    MatrixIterator Down (){
+        current = current -> nextInColumn;
+        return *this;
+        
+    }
+    
+    Node<T>* getCurrent(){
+        return current;
+    }
+    
+    MatrixIterator operator = (Node<T>* newCurrent){
+       
+            current = newCurrent;
+        return *this;
+    }
 
-	T& operator* ()
-	{
-		return current->value;
-	}
+    T& operator* ()
+    {
+        return current->value;
+    }
+    
+    /*T* operator -> (){
+        return &(current-> value );
+    }*/
+    
+    
 
-	bool operator== (const MatrixIterator<T>& iterator)
-	{
-		return current == iterator->current;
-	}
-	bool operator!= (const MatrixIterator<T>& iterator)
-	{
-		return current != iterator->current;
-	}
+    bool operator== (const MatrixIterator<T>& iterator)
+    {
+        return current == iterator.current;
+    }
+    bool operator!= (const MatrixIterator<T>& iterator)
+    {
+        return current != iterator.current;
+    }
 };
 
 template <typename T>
 class Matrix
 {
 public:
-	Matrix();
-	//Construct a matrix with #of row and col, will not be initialized by default
-	//Matrix(int row, int col, T initializedValuValue);
-	Matrix(T** arr, int rows, int cols); //parameterized
-	Matrix(const Matrix& obj);
-	Matrix(Matrix&& obj);
-	virtual ~Matrix();
+    Matrix();
+    Matrix(T** arr, int rows, int cols); //parameterized
+    Matrix(const Matrix& obj); //copy constructor
+    Matrix<T>& operator = (const Matrix<T>& );
+    Matrix(Matrix&& obj); // move constructor
+    Matrix<T>& operator = (Matrix<T> &&);
+    virtual ~Matrix(); // destructor
 
-	Node<T>* getRow(int) const;
-	Node<T>* getColumn(int) const;
-	T at(int const row, int const col);
-	Matrix<T>& transpose();
-	Matrix<T> operator+ (const Matrix& obj);
-	Matrix<T> operator* (const Matrix& obj);
-	friend ostream& operator<< (ostream& os, const Matrix& matrix);
-private:
-	Node<T>* headMatrix;
-	Node<T>** newRow; //seperating each rows.
+    void Delete();
+    void Copy(const Matrix<T>&);
+    Node<T>* getRow(int) const;
+    Node<T>* getColumn(int) const;
+    T at(int const row, int const col);
+    Matrix<T>& transpose();
+    bool addNewRow(Matrix& , Node<T>*, int, int, int);
+    Matrix<T> operator+ (const Matrix& obj);
+    Matrix<T> operator* (const Matrix& obj);
+    friend istream& operator<< (ostream& os, const Matrix& matrix);
+public:
+    Node<T>* headMatrix;
+    Node<T>** rowsOfMatrix; //seperating each rows.
 
-	int rows;
-	int cols;
+    int numRows;
+    int numCols;
 
 };
 
