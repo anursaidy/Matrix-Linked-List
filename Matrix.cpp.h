@@ -31,7 +31,7 @@ Matrix<T>::Matrix(T** arr, int r, int c)
         }
         rowsOfMatrix[i] = nullptr;
         for (int j = 0; j < numCols; j++) {
-            if (rowsOfMatrix[i] != nullptr) {
+            if (rowsOfMatrix[i] == nullptr) {
                 rowsOfMatrix[i] = newNode;
             }
             else {
@@ -115,49 +115,49 @@ void Matrix<T>::Delete()
 		}
     }
 }
-
-template <typename T>
-void Matrix<T>::Delete(){
-    
-    if(headMatrix == nullptr){
-        return;
-   }
-    
-    Node <T>* nodeToDelete = nullptr ,*prev = nullptr ;
-    
-    nodeToDelete = prev = getRow(0);
-    
-    int currentRow = 0;
-    
-    
-    while(currentRow < numRows){
-        
-        if(nodeToDelete->nextInRow == nullptr){
-           
-            prev->nextInRow = prev->nextInColumn = nullptr;
-            delete prev;
-            currentRow++;
-            if (currentRow < numRows)
-                nodeToDelete = prev = (getRow(currentRow));
-            else
-                break;
-        }
-        
-        nodeToDelete = nodeToDelete-> nextInRow;
-        
-     
-        cout << prev-> value; //DeleteThisLine
-
-        
-        prev->nextInRow = prev->nextInColumn = nullptr;
-        delete prev;    //core dumped error if (nodeToDelete->nextInRow == nullptr), because prev is alreay being deleted in the above
-        
-        prev = nodeToDelete;
-        
-    }
-    
-    
-}
+//
+//template <typename T>
+//void Matrix<T>::Delete(){
+//    
+//    if(headMatrix == nullptr){
+//        return;
+//   }
+//    
+//    Node <T>* nodeToDelete = nullptr ,*prev = nullptr ;
+//    
+//    nodeToDelete = prev = getRow(0);
+//    
+//    int currentRow = 0;
+//    
+//    
+//    while(currentRow < numRows){
+//        
+//        if(nodeToDelete->nextInRow == nullptr){
+//           
+//            prev->nextInRow = prev->nextInColumn = nullptr;
+//            delete prev;
+//            currentRow++;
+//            if (currentRow < numRows)
+//                nodeToDelete = prev = (getRow(currentRow));
+//            else
+//                break;
+//        }
+//        
+//        nodeToDelete = nodeToDelete-> nextInRow;
+//        
+//     
+//        cout << prev-> value; //DeleteThisLine
+//
+//        
+//        prev->nextInRow = prev->nextInColumn = nullptr;
+//        delete prev;    //core dumped error if (nodeToDelete->nextInRow == nullptr), because prev is alreay being deleted in the above
+//        
+//        prev = nodeToDelete;
+//        
+//    }
+//    
+//    
+//}
 
 template <typename T>
 void Matrix<T>::Copy(const Matrix<T>& obj){
@@ -301,12 +301,12 @@ Matrix<T>::Matrix(Matrix&& obj) {
 
 
 template <typename T>
-Node<T>* Matrix<T>::getRow(int i = 0) const {
+Node<T>* Matrix<T>::getRow(int i) const {
     return rowsOfMatrix[i];
 }
 
 template <typename T>
-Node<T>* Matrix<T>::getColumn(int i = 0) const{
+Node<T>* Matrix<T>::getColumn(int i) const{
     Node<T>* temp = rowsOfMatrix[0];
     for (int indexOfCol = 0; indexOfCol < i; temp = temp->nextInRow, indexOfCol++)
         ;//blank statement
@@ -417,7 +417,7 @@ Matrix<T>& Matrix<T>::transpose() {
 
 template <typename T>
 Matrix<T> Matrix<T>::operator+ (const Matrix& obj) {
-    if (numRows != obj.numRows || cols != obj.cols)
+    if (numRows != obj.numRows || numCols != obj.numCols)
         throw invalid_argument("Matrix is not compatible.");
 
     if (headMatrix == nullptr) //if matrix is empty then return the empty matrix
@@ -438,33 +438,56 @@ Matrix<T> Matrix<T>::operator+ (const Matrix& obj) {
 
 template <typename T>
 Matrix<T> Matrix<T>::operator* (const Matrix& obj) {
-    Node<T>* rowsMatrix;
-    Node<T>* colsMatrix;
+    Node<T>* rowsM;
+    Node<T>* colsM;
     
-    int sum = 0;
-    
-    int j = 0;
-    for (int i = 0; i < numRows-1; )
+    //Create a dynamic array for new matrix
+    int** arr = new int* [numRows];
+    for (int i = 0; i < numRows; i++)
     {
+        for (int j = 0; j < numCols; j++)
+        {
+            arr[i] = new int[numCols];
 
+        }
+    }
+   
+
+    int sum = 0;    
+    int j = 0;
+    for (int i = 0; i < numRows; )
+    {
+        //Has to remain in the same row until we iterate through all columns of the obj
         if (j == obj.numCols) {
-             //has to remain in the same row until we iterate through all columns
+            
             i++;
             j = 0;
         }
-        rowsMatrix = getRow(i);
-        colsMatrix = obj.getColumn(j);
+     
+        rowsM = getRow(i);
+        colsM = obj.getColumn(j);
 
-        while (colsMatrix != nullptr) {
-            sum += rowsMatrix->value * colsMatrix->value;
-            rowsMatrix = rowsMatrix->nextInRow;
-            colsMatrix = colsMatrix->nextInColumn;
+        while (colsM != nullptr) {
+            sum += rowsM->value * colsM->value;
+            rowsM = rowsM->nextInRow;
+            colsM = colsM->nextInColumn;
         }
+        
+        //Assigning sum to array
+        arr[i][j] = sum;
 
+        //Resetting sum for next row
         sum = 0;
+
+        //At the end of the matrix
+        if (i == numRows-1 and j == obj.numCols-1) {
+            break; //end
+        }
         j++;
+       
     }
-    return (*this);
+    //A new matrix with values of arr
+    return Matrix(arr, numRows, numCols);
 }
 
 template <typename T>
