@@ -92,7 +92,7 @@ public:
     
     
     // We need a way to get the element going down
-    MatrixIterator Down (){
+    MatrixIterator Down(){
         current = current -> nextInColumn;
         return *this;
         
