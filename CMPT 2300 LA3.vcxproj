@@ -133,6 +133,9 @@
     <ClInclude Include="Matrix.cpp.h" />
     <ClInclude Include="Matrix.hpp" />
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="Time Complexity.txt" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

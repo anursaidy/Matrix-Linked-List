@@ -44,6 +44,7 @@ public:
         nextInColumn = nullptr;
     }
 
+
     virtual ~Node()
     {
         if (nextInRow != nullptr)
@@ -135,9 +136,9 @@ class Matrix
 public:
     Matrix();
     Matrix(T** arr, int rows, int cols); //parameterized
-    Matrix(const Matrix& obj); //copy constructor
+    Matrix(const Matrix<T>& obj); //copy constructor
     Matrix<T>& operator = (const Matrix<T>& );
-    Matrix(Matrix&& obj); // move constructor
+    Matrix(Matrix<T>&& obj); // move constructor
     Matrix<T>& operator = (Matrix<T> &&);
     virtual ~Matrix(); // destructor
 
@@ -147,18 +148,23 @@ public:
     Node<T>* getColumn(int) const;
     T at(int const row, int const col);
     Matrix<T>& transpose();
-    bool addNewRow(Matrix& , Node<T>*, int, int, int);
-    Matrix<T> operator+ (const Matrix& obj);
-    Matrix<T> operator* (const Matrix& obj);
-    friend istream& operator<< (ostream& os, const Matrix& matrix);
-public:
+    bool addNewRow(Matrix<T>& , Node<T>*, int, int, int);
+    Matrix<T> operator+ (const Matrix<T>& obj);
+    Matrix<T> operator* (const Matrix<T>& obj);
+    friend ostream& operator<< (ostream& out, const Matrix<T>& matrix);
+
+   
+private:
     Node<T>* headMatrix;
     Node<T>** rowsOfMatrix; //seperating each rows.
 
     int numRows;
     int numCols;
 
+
+
 };
+
 
 #include "Matrix.cpp.h"
 #endif // !MATRIX_HPP

@@ -5,6 +5,9 @@ template<typename T>
 Matrix<T>::Matrix()
 {
 	headMatrix = nullptr;
+	rowsOfMatrix = nullptr;
+	numRows = 0;
+	numCols = 0;
 }
 
 template <typename T>
@@ -14,8 +17,8 @@ Matrix<T>::Matrix(T** arr, int r, int c)
 	numRows = r;
 	numCols = c;
 
-	//if (*arr = nullptr)
-	//    throw; //error;
+	if (*arr == nullptr)
+		throw invalid_argument("Input arr is empty"); //error;
 
 
 	Node<T>* newNode = new Node<T>(arr[0][0]);
@@ -74,7 +77,7 @@ Matrix<T>::~Matrix()
 
 
 template <typename T>
-Matrix<T>::Matrix(const Matrix& obj)
+Matrix<T>::Matrix(const Matrix<T>& obj)
 {
 	if (obj.headMatrix != nullptr)
 		Copy(obj);
@@ -93,71 +96,47 @@ Matrix<T>& Matrix<T>::operator = (const Matrix<T>& obj) {
 	return *this;
 }
 
-template <typename T>
-void Matrix<T>::Delete()
-{
-	//BACH's version
-	if (headMatrix == nullptr)
-		return;
 
-	Node<T>* nodeToDelete;
-	Node<T>* nextNodeToDelete;
-	for (int atRow = 0; atRow < numRows; atRow++)
-	{
-		nodeToDelete = getRow(atRow);
-		nextNodeToDelete = nodeToDelete->nextInRow;
-		while (nextNodeToDelete->nextInRow != nullptr)
-		{
-			rowsOfMatrix[atRow] = nextNodeToDelete;
-			delete nodeToDelete;
-			nodeToDelete = nextNodeToDelete;
-			nextNodeToDelete = nextNodeToDelete->nextInRow;
-		}
+template <typename T>
+void Matrix<T>::Delete() {
+
+	if (headMatrix == nullptr) {
+		return;
 	}
+
+	Node <T>* nodeToDelete = nullptr, * prev = nullptr;
+
+	nodeToDelete = prev = getRow(0);
+
+	int currentRow = 0;
+
+
+	while (currentRow < numRows) {
+
+		if (nodeToDelete->nextInRow == nullptr) {
+
+			prev->nextInRow = prev->nextInColumn = nullptr;
+			delete prev;
+			currentRow++;
+			if (currentRow < numRows)
+				nodeToDelete = prev = (getRow(currentRow));
+			else
+				break;
+		}
+
+		nodeToDelete = nodeToDelete->nextInRow;
+
+
+		
+		prev->nextInRow = prev->nextInColumn = nullptr;
+		delete prev;   
+
+		prev = nodeToDelete;
+
+	}
+
+
 }
-//
-//template <typename T>
-//void Matrix<T>::Delete(){
-//    
-//    if(headMatrix == nullptr){
-//        return;
-//   }
-//    
-//    Node <T>* nodeToDelete = nullptr ,*prev = nullptr ;
-//    
-//    nodeToDelete = prev = getRow(0);
-//    
-//    int currentRow = 0;
-//    
-//    
-//    while(currentRow < numRows){
-//        
-//        if(nodeToDelete->nextInRow == nullptr){
-//           
-//            prev->nextInRow = prev->nextInColumn = nullptr;
-//            delete prev;
-//            currentRow++;
-//            if (currentRow < numRows)
-//                nodeToDelete = prev = (getRow(currentRow));
-//            else
-//                break;
-//        }
-//        
-//        nodeToDelete = nodeToDelete-> nextInRow;
-//        
-//     
-//        cout << prev-> value; //DeleteThisLine
-//
-//        
-//        prev->nextInRow = prev->nextInColumn = nullptr;
-//        delete prev;    //core dumped error if (nodeToDelete->nextInRow == nullptr), because prev is alreay being deleted in the above
-//        
-//        prev = nodeToDelete;
-//        
-//    }
-//    
-//    
-//}
 
 template <typename T>
 void Matrix<T>::Copy(const Matrix<T>& obj) {
@@ -260,8 +239,6 @@ void Matrix<T>::Copy(const Matrix<T>& obj) {
 
 template <typename T>
 Matrix<T>& Matrix<T>::operator = (Matrix<T>&& obj) {
-
-
 	if (this != &obj) {
 		numRows = obj.numRows;
 		numCols = obj.numCols;
@@ -282,7 +259,7 @@ Matrix<T>& Matrix<T>::operator = (Matrix<T>&& obj) {
 }
 
 template <typename T>
-Matrix<T>::Matrix(Matrix&& obj) {
+Matrix<T>::Matrix(Matrix<T>&& obj) {
 
 	if (obj.headMatrix != nullptr) {
 		numRows = obj.numRows;
@@ -322,11 +299,11 @@ T Matrix<T>::at(int const row, int const col) {
 		temp = temp->nextInRow;
 		count++;
 	}
-	return temp;
+	return temp->value;
 }
 
 template <typename T>
-bool Matrix<T>::addNewRow(Matrix& object, Node<T>* headRow, int newRows, int i, int newCols) {
+bool Matrix<T>::addNewRow(Matrix<T>& object, Node<T>* headRow, int newRows, int i, int newCols) {
 
 	// i would change to a matrix itertor
 	if (i == 0) {
@@ -419,7 +396,7 @@ Matrix<T>& Matrix<T>::transpose() {
 }
 
 template <typename T>
-Matrix<T> Matrix<T>::operator+ (const Matrix& obj) {
+Matrix<T> Matrix<T>::operator+ (const Matrix<T>& obj) {
 	if (numRows != obj.numRows || numCols != obj.numCols)
 		throw invalid_argument("Matrix is not compatible.");
 
@@ -440,13 +417,13 @@ Matrix<T> Matrix<T>::operator+ (const Matrix& obj) {
 }
 
 template <typename T>
-Matrix<T> Matrix<T>::operator* (const Matrix& obj) {
+Matrix<T> Matrix<T>::operator* (const Matrix<T>& obj) {
 
 	//If not using iterator
 	/*  Node<T>* rowsM;
 		  Node<T>* colsM;*/
 
-	 //Create a dynamic array for new matrix
+		  //Create a dynamic array for new matrix
 	int** arr = new int* [numRows];
 	for (int i = 0; i < numRows; i++)
 	{
@@ -476,17 +453,17 @@ Matrix<T> Matrix<T>::operator* (const Matrix& obj) {
 		MatrixIterator<T> rowIterator(getRow(i));
 		MatrixIterator<T> columnIterator(obj.getColumn(j));
 
-
 		while (columnIterator != nullptr) {
+			//With Iterators
+			sum += *rowIterator * *columnIterator;
+			rowIterator++;
+			columnIterator.Down();
+
 			//Without Iterators
 		   /* sum += rowsM->value * colsM->value;
 			rowsM = rowsM->nextInRow;
 			colsM = colsM->nextInColumn;*/
 
-			//With Iterators
-			sum += *rowIterator * *columnIterator;
-			rowIterator++;
-			columnIterator.Down();
 		}
 
 		//Assigning sum to array
@@ -506,10 +483,27 @@ Matrix<T> Matrix<T>::operator* (const Matrix& obj) {
 	return Matrix(arr, numRows, numCols);
 }
 
+
 template <typename T>
-istream& operator<< (ostream& os, const Matrix<T>& matrix) {
+ostream& operator<< (ostream& out, const Matrix<T>& matrix) {
+	ostream_iterator<T> os(out);
+
+	int j = 0;
+	MatrixIterator<T> RowIterator(matrix.headMatrix);
+	while (j < matrix.numRows - 1) {
 
 
+		//temp = RowIterator.getCurrent();
+		if (RowIterator.getCurrent()->nextInRow == nullptr)
+		{
+			j++;
 
+			RowIterator = matrix.rowsOfMatrix[j];
+			*os << endl;
+		}
 
+		*os << *RowIterator << ", ";
+
+	}
+	return out;
 }
